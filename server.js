@@ -7,4 +7,8 @@ app.get('/user', (req, res) => {
     
 })
 
+app.post('/user', async(req, res) => {
+    
+})
+
 app.listen('3000')
