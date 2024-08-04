@@ -8,7 +8,7 @@ const conection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'contactsanta'
+    database: 'user'
 })
 
 conection.connect(err => {
@@ -20,13 +20,32 @@ conection.connect(err => {
 })
 
 app.get('/user', (req, res) => {
-    res.send('Hello world.')
-    
+    conection.query('SELECT * FROM login', (err, queryRes) => {
+        if (err){
+            console.error('Erro ao executar a query: ', err)
+            res.status(500).json({ error: 'Erro ao buscar dados.'})
+            return
+        }
+        res.json(queryRes);
+    })    
 })
 
 app.post('/user', async(req, res) => {
-    res.statusCode(200).json
-    return;
+    const {username, password} = req.body;
+    conection.query('INSERT INTO login (username, password) VALUES (?, ?)', [username, password], (err, queryRes) => {
+        if (err) {
+            console.error('Erro ao executar query: ', err)
+            res.status(500).json({ error: 'Erro ao inserir.'})
+            return
+        }
+        res.status(201).json({
+            id: queryRes.insertId,
+            username: username,
+        })
+    })
 })
 
-app.listen('3000')
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor a correr na porta ${PORT}`)
+})
