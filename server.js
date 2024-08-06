@@ -30,6 +30,20 @@ app.get('/user', (req, res) => {
     })    
 })
 
+app.get('/user/:id', async(req, res) => {
+    const {id} = req.params;
+    conection.query('SELECT * FROM login WHERE id = ?', [id], (err, queryRes) => {
+        if (err) {
+            console.error('Erro ao executar query: ', err)
+            res.status(500).json({ error: 'Erro ao buscar.'})
+            return
+        }
+        res.status(201).json({
+            data: queryRes
+        })
+    })
+})
+
 app.post('/user', async(req, res) => {
     const {username, password} = req.body;
     conection.query('INSERT INTO login (username, password) VALUES (?, ?)', [username, password], (err, queryRes) => {
@@ -41,6 +55,35 @@ app.post('/user', async(req, res) => {
         res.status(201).json({
             id: queryRes.insertId,
             username: username,
+        })
+    })
+})
+
+app.put('/user/:id', async(req, res) => {
+    const {username, password} = req.body;
+    const {id} = req.params;
+    conection.query('UPDATE login SET username = ?, password = ? WHERE id = ?', [username, password, id], (err, queryRes) => {
+        if (err) {
+            console.error('Erro ao executar query: ', err)
+            res.status(500).json({ error: 'Erro ao atualizar.'})
+            return
+        }
+        res.status(201).json({
+            id
+        })
+    })
+})
+
+app.delete('/user/:id', (req, res) => {
+    const {id} = req.params
+    conection.query('DELETE from login WHERE id = ?', [id], (err, queryRes) => {
+        if (err) {
+            console.error('Erro ao executar query: ', err)
+            res.status(500).json({ error: 'Erro ao deletar.'})
+            return
+        }
+        res.status(201).json({
+            id
         })
     })
 })
